@@ -26,14 +26,17 @@ package xyz.michaelobi.mvp;
 
 import android.support.annotation.NonNull;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
 
 public abstract class BasePresenter<T extends Mvp.View> implements Mvp.Presenter<T> {
 
     private T view;
 
-    private CompositeSubscription compositeSubscription = new CompositeSubscription();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     public void attachView(T view) {
@@ -42,7 +45,7 @@ public abstract class BasePresenter<T extends Mvp.View> implements Mvp.Presenter
 
     @Override
     public void detachView() {
-        compositeSubscription.clear();
+        compositeDisposable.clear();
         this.view = null;
     }
 
@@ -62,8 +65,8 @@ public abstract class BasePresenter<T extends Mvp.View> implements Mvp.Presenter
         return view != null;
     }
 
-    protected void addSubscription(Subscription subscription) {
-        this.compositeSubscription.add(subscription);
+    protected void addSubscription(Disposable disposable) {
+        this.compositeDisposable.add(disposable);
     }
 
     public static class MvpViewNotAttachedException extends IllegalStateException {
